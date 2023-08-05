@@ -22,9 +22,9 @@
 
     <ListView
         android:id="@+id/listViewDatos"
-        android:layout_width="329dp"
-        android:layout_height="643dp"
-        tools:layout_editor_absoluteX="41dp"
-        tools:layout_editor_absoluteY="33dp"
-        tools:ignore="MissingConstraints" />
+        android:layout_width="385dp"
+        android:layout_height="700dp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="10dp"
+        tools:layout_editor_absoluteY="-23dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

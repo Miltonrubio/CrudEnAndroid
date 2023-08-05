@@ -54,7 +54,6 @@ public class Adapter extends ArrayAdapter<Usuarios> {
                 Glide.with(context)
                         .load(R.drawable.a)
                         .into(imageViewFoto);
-                tvNombre.setText(usuario.getFoto());
             } else {
 
                 Glide.with(context)

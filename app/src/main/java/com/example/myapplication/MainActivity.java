@@ -1,10 +1,14 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -33,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     Usuarios usuarios;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +46,50 @@ public class MainActivity extends AppCompatActivity {
         adapter = new Adapter(this, usuariosArrayList);
 
         listView.setAdapter(adapter);
+
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+
+
+                CharSequence[] dialogo = {"VER DATOS", "EDITAR DATOS", "ELIMINAR DATOS"};
+                builder.setTitle(usuariosArrayList.get(position).getNombre());
+
+                builder.setItems(dialogo, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        switch (which) {
+                            case 0:
+
+                                startActivity(new Intent(getApplicationContext(), Detalles.class).putExtra("position", position));
+                                break;
+                            case 1:
+
+                                startActivity(new Intent(getApplicationContext(), Editar.class).putExtra("position", position));
+                                break;
+
+                            case 2:
+                                    startActivity(new Intent(getApplicationContext(), ActivityEliminar.class).putExtra("position", position));
+                                break;
+
+                        }
+                    }
+                });
+
+                builder.create().show();
+
+
+            }
+        });
+
+
         ListarDatos();
+
 
     }
 
@@ -51,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, ActivityInsertar.class);
         startActivity(intent);
     }
+
     public void ListarDatos() {
 
         StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.1.107/android/mostrar.php",
@@ -74,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                                     String phone = object.getString("phone");
                                     String foto = object.getString("foto");
 
-                                    usuarios = new Usuarios(id, nombre, email, pass, phone,foto);
+                                    usuarios = new Usuarios(id, nombre, email, pass, phone, foto);
                                     usuariosArrayList.add(usuarios);
                                     adapter.notifyDataSetChanged();
                                 }
@@ -93,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Error al obtener los datos", Toast.LENGTH_SHORT).show();
             }
 
-        }) ;
+        });
 
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         requestQueue.add(request);
