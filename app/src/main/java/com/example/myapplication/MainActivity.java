@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,7 +77,8 @@ public class MainActivity extends AppCompatActivity {
                                 break;
 
                             case 2:
-                                    startActivity(new Intent(getApplicationContext(), ActivityEliminar.class).putExtra("position", position));
+
+                       eliminar( usuariosArrayList.get(position).getId());
                                 break;
 
                         }
@@ -146,4 +150,51 @@ public class MainActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
+
+    public void eliminar(final String id) {
+
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Cargando...");
+        progressDialog.show();
+
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.1.107/android/eliminar.php",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        String trimmedResponse = response.trim();
+
+                        if (trimmedResponse.equalsIgnoreCase("No Eliminado")) {
+                            Toast.makeText(MainActivity.this, "Error al eliminar", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+
+                        } else {
+
+                            Toast.makeText(MainActivity.this, "Eliminado correctamente", Toast.LENGTH_SHORT).show();
+                            progressDialog.dismiss();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            finish();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+
+            public void onErrorResponse(VolleyError error) {
+                progressDialog.dismiss();
+                Toast.makeText(MainActivity.this, "Error en la solicitud: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("ID", id);
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue1 = Volley.newRequestQueue(MainActivity.this);
+        requestQueue1.add(request);
+    }
+
 }
+
